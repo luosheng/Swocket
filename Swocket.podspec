@@ -16,9 +16,19 @@ Pod::Spec.new do |s|
   s.author           = { "Joakim Gyllström" => "joakim@backslashed.se" }
   s.source           = { :git => "https://github.com/mikaoj/Swocket.git", :tag => s.version.to_s }
   s.ios.deployment_target = '8.0'
-  s.osx.deployment_target = '10.9'
-
+  s.osx.deployment_target = '10.10'
   s.requires_arc = true
 
-  s.source_files = 'Pod/**/*'
+  # The base 
+  s.subspec 'Base' do |base|
+    base.source_files = 'Pod/Swocket/**/*'
+  end
+
+  # Asynchronous 
+  s.subspec 'Async' do |async|
+    async.dependency 'Swocket/Base'
+    async.dependency 'BrightFutures'
+    async.source_files = 'Pod/Async/**/*'
+  end
+
 end
