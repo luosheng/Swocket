@@ -1,0 +1,6 @@
+framework module BrightFutures {
+  umbrella header "Pods-Swocket_Example-BrightFutures-umbrella.h"
+
+  export *
+  module * { export * }
+}

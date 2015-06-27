@@ -2,7 +2,7 @@
   "name": "Swocket",
   "version": "0.1.0",
   "summary": "Asynchronous network framework in Swift",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/Swocket",
+  "homepage": "https://github.com/mikaoj/Swocket",
   "license": "MIT",
   "authors": {
     "Joakim Gyllström": "joakim@backslashed.se"
@@ -13,8 +13,25 @@
   },
   "platforms": {
     "ios": "8.0",
-    "osx": "10.9"
+    "osx": "10.10"
   },
   "requires_arc": true,
-  "source_files": "Pod/**/*"
+  "subspecs": [
+    {
+      "name": "Base",
+      "source_files": "Pod/Swocket/**/*"
+    },
+    {
+      "name": "Async",
+      "dependencies": {
+        "Swocket/Base": [
+
+        ],
+        "BrightFutures": [
+
+        ]
+      },
+      "source_files": "Pod/Async/**/*"
+    }
+  ]
 }

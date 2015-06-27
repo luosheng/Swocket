@@ -1,14 +1,37 @@
 PODS:
-  - Swocket (0.1.0)
+  - Box (1.2.2)
+  - BrightFutures (2.0.0-beta.1):
+    - Result (~> 0.4.2)
+  - Result (0.4.4):
+    - Box (~> 1.2)
+  - Swocket (0.1.0):
+    - Swocket/Async (= 0.1.0)
+    - Swocket/Base (= 0.1.0)
+  - Swocket/Async (0.1.0):
+    - BrightFutures
+    - Swocket/Base
+  - Swocket/Base (0.1.0)
 
 DEPENDENCIES:
+  - BrightFutures (from `https://github.com/Thomvis/BrightFutures.git`, branch `swiftier-2.0`)
   - Swocket (from `../`)
 
 EXTERNAL SOURCES:
+  BrightFutures:
+    :branch: swiftier-2.0
+    :git: https://github.com/Thomvis/BrightFutures.git
   Swocket:
     :path: "../"
 
+CHECKOUT OPTIONS:
+  BrightFutures:
+    :commit: da9cfad73e5f378b9da9f0a17880fb16d292e6af
+    :git: https://github.com/Thomvis/BrightFutures.git
+
 SPEC CHECKSUMS:
-  Swocket: b558e678d92be0da0b887b3c9a192c464daafa93
+  Box: a92e8aa4c099e6bc0733829665caf9e668ef53b8
+  BrightFutures: 0e94986b7c42c1fc3013709506ec32d02819e7aa
+  Result: b44f6bc8762bbffaf2c5df58f2c7d12c3496ced8
+  Swocket: db93a08ace962f4bf3ec62e91d33bbe42b89a7bd
 
 COCOAPODS: 0.37.2

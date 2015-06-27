@@ -1,12 +1,12 @@
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
+pod 'BrightFutures', :git => 'https://github.com/Thomvis/BrightFutures.git', :branch => 'swiftier-2.0'
+
 target 'Swocket_Example', :exclusive => true do
   pod "Swocket", :path => "../"
 end
 
 target 'Swocket_Tests', :exclusive => true do
   pod "Swocket", :path => "../"
-
-  
 end

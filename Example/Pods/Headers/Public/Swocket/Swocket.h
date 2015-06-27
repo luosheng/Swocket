@@ -1,1 +1,1 @@
-../../../../../Pod/Classes/Swocket.h
+../../../../../Pod/Swocket/Classes/Swocket.h
