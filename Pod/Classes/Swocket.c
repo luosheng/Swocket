@@ -127,57 +127,30 @@ int swocket_accept(int sockfd) {
     return new_fd;
 }
 
-int swocket_listen_udp(const char * port) {
-    int sockfd;
-    struct addrinfo hints, *servinfo, *p;
-    int rv;
-
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
-    hints.ai_socktype = SOCK_DGRAM;
-    hints.ai_flags = AI_PASSIVE; // use my IP
+// Caller should do a freeaddrinfo when done with addrinfo pointer
+struct addrinfo * swocket_addrinfo_udp(const char * host, const char * port) {
+    struct addrinfo hints, *servinfo;
     
-    if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
-        return -1;
-    }
-    // loop through all the results and bind to the first we can
-    for(p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                             p->ai_protocol)) == -1) {
-            perror("listener: socket");
-            continue; }
-        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            close(sockfd);
-            perror("listener: bind");
-            continue; }
-        break; }
-    if (p == NULL) {
-        return -1;
-    }
-    
-    freeaddrinfo(servinfo);
-    
-    return sockfd;
-}
-
-int swocket_connect_udp(const char * host, const char * port) {
-    int sockfd;
-    struct addrinfo hints, *servinfo, *p;
-    int rv;
-
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
-    if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
-        return -1;
+    if (getaddrinfo(host, port, &hints, &servinfo) != 0) {
+        return NULL;
     }
+    
+    return servinfo;
+}
+
+int swocket_socket_udp(const struct addrinfo *servinfo) {
+    int sockfd;
+    const struct addrinfo *p;
+    
     // loop through all the results and make a socket
     for(p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                             p->ai_protocol)) == -1) {
-            perror("talker: socket");
+        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
             continue;
         }
+        
         break;
     }
     
@@ -185,35 +158,22 @@ int swocket_connect_udp(const char * host, const char * port) {
         return -1;
     }
     
-    freeaddrinfo(servinfo);
-    
     return sockfd;
 }
 
-//ssize_t swocket_recieve_udp(int sockfd) {
-//    int MAXBUFLEN = 100;
-//    
-//    ssize_t numbytes;
-//    struct sockaddr_storage their_addr;
-//    char buf[MAXBUFLEN];
-//    socklen_t addr_len;
-//    
-//    addr_len = sizeof their_addr;
-//    if ((numbytes = recvfrom(sockfd, buf, MAXBUFLEN-1 , 0,
-//                             (struct sockaddr *)&their_addr, &addr_len)) == -1) {
-//        return -1;
-//    }
-//
-//    return numbytes;
-//}
-//
-//ssize_t swocket_send_udp(int sockfd) {
-//    int numbytes;
-//    
-//    if ((numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0,
-//                           p->ai_addr, p->ai_addrlen)) == -1) {
-//        return -1;
-//    }
-//    
-//    return 0;
-//}
+ssize_t swocket_recieve_udp(int sockfd, void * data, size_t data_length) {
+    struct sockaddr_storage their_addr;
+    ssize_t numbytes;
+    socklen_t addr_len;
+    
+    addr_len = sizeof their_addr;
+    if ((numbytes = recvfrom(sockfd, data, data_length-1 , 0, (struct sockaddr *)&their_addr, &addr_len)) == -1) {
+        return -1;
+    }
+    
+    return numbytes;
+}
+
+ssize_t swocket_send_udp(int sockfd, const void * data, ssize_t length, const struct addrinfo * dest) {
+    return sendto(sockfd, data, length, 0, dest->ai_addr, dest->ai_addrlen);
+}
