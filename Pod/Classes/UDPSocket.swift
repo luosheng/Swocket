@@ -22,25 +22,31 @@
 
 import Foundation
 
-public class UDPSocket : Asyncable, Transmittable, Connectable {
+public final class UDPSocket : Asyncable, Transmittable, Connectable {
     // MARK: Private data
     private let commonSocket: Socket
+    private let addressInformation: UnsafeMutablePointer<addrinfo>
+    private var connectionDescriptor: Int32?
     
     // MARK: Async vars
-    public final var dispatchQueue: dispatch_queue_t {
+    public var dispatchQueue: dispatch_queue_t {
         get {
             return commonSocket.dispatchQueue
         }
     }
     
-    public final var callbackQueue: dispatch_queue_t {
+    public var callbackQueue: dispatch_queue_t {
         get {
             return commonSocket.callbackQueue
         }
     }
     
     // MARK: Connectable vars
-    public final let connected = true
+    public var connected: Bool {
+        get {
+            return connectionDescriptor != nil
+        }
+    }
     
     // MARK: Init
     public required init(host: String, port: UInt) {
@@ -49,18 +55,72 @@ public class UDPSocket : Asyncable, Transmittable, Connectable {
             callback: dispatch_get_main_queue(),
             dispatch: dispatch_queue_create("TCP:\(host):\(port)", nil)
         )
+        
+        addressInformation = swocket_addrinfo_udp(commonSocket.host, commonSocket.port)
+    }
+    
+    deinit {
+        freeaddrinfo(addressInformation)
     }
     
     // MARK: Connectable functions
-    public final func connect() throws { }
-    public final func disconnect() throws { }
+    public func connect() throws {
+        if connectionDescriptor != nil {
+            return
+            // TODO: Should this be an error?
+        }
+        
+        let temp = swocket_socket_udp(addressInformation)
+        if temp != -1 {
+            connectionDescriptor = temp
+        } else {
+            throw SwocketError.FailedToConnect
+        }
+    }
+    public func disconnect() throws {
+        guard let connectionDescriptor = connectionDescriptor else {
+            return
+            // TODO: Error?
+        }
+        
+        close(connectionDescriptor)
+        self.connectionDescriptor = nil
+    }
     
     // MARK: Transmittable
-    public final func sendData(data: NSData) throws {
+    public func sendData(data: NSData) throws {
+        if connectionDescriptor == nil {
+            try connect()
+        }
         
+        try sendAll(data, descriptor: connectionDescriptor!, destination: addressInformation, totalSent: 0, bytesLeft: data.length, chunkSize: 0)
     }
 
-    public final func recieveData() throws -> NSData {
-        return NSData()
+    public func recieveData() throws -> NSData {
+        if connectionDescriptor == nil {
+            try connect()
+        }
+        
+        var zero: Int8 = 0
+        let data = NSMutableData(bytes: &zero, length: commonSocket.maxRecieveSize)
+        
+        let numberOfBytes = swocket_recieve_udp(connectionDescriptor!, data.mutableBytes, data.length)
+        if numberOfBytes == -1 {
+            throw SwocketError.FailedToRecieve
+        } else {
+            return NSData(bytes: data.bytes, length: numberOfBytes)
+        }
+    }
+    
+    // MARK: Private
+    private func sendAll(data: NSData, descriptor: Int32, destination: UnsafeMutablePointer<addrinfo>, totalSent: Int, bytesLeft: Int, chunkSize: Int) throws {
+        if chunkSize == -1 {
+            throw SwocketError.FailedToSend
+        } else if bytesLeft == 0 {
+            return
+        } else {
+            let chunkSize = swocket_send_udp(descriptor, data.bytes+totalSent, bytesLeft, destination)
+            try sendAll(data, descriptor: descriptor, destination: destination, totalSent: totalSent+chunkSize, bytesLeft: bytesLeft-chunkSize, chunkSize: chunkSize)
+        }
     }
 }
