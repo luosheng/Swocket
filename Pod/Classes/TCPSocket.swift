@@ -29,20 +29,20 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
     private let maxPendingConnections: Int32 = 10
     
     // MARK: Async vars
-    public final var dispatchQueue: dispatch_queue_t {
+    public var dispatchQueue: dispatch_queue_t {
         get {
             return commonSocket.dispatchQueue
         }
     }
     
-    public final var callbackQueue: dispatch_queue_t {
+    public var callbackQueue: dispatch_queue_t {
         get {
             return commonSocket.callbackQueue
         }
     }
     
     // MARK: Connectable vars
-    public final var connected: Bool {
+    public var connected: Bool {
         get {
             return connectionDescriptor != nil
         }
@@ -64,7 +64,7 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
     }
     
     // MARK: Connectable functions
-    public final func connect() throws {
+    public func connect() throws {
         if connected {
             throw SwocketError.AlreadyConnected
         }
@@ -77,7 +77,7 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
         }
     }
     
-    public final func disconnect() throws {
+    public func disconnect() throws {
         guard let descriptor = connectionDescriptor else {
             throw SwocketError.NotConnected
         }
@@ -87,7 +87,7 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
     }
     
     // MARK: Transmittable functions
-    public final func sendData(data: NSData) throws {
+    public func sendData(data: NSData) throws {
         guard let descriptor = connectionDescriptor else {
             throw SwocketError.NotConnected
         }
@@ -95,16 +95,15 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
         try sendAll(data, descriptor: descriptor, totalSent: 0, bytesLeft: data.length, chunkSize: 0)
     }
     
-    public final func recieveData() throws -> NSData {
+    public func recieveData() throws -> NSData {
         guard let descriptor = connectionDescriptor else {
             throw SwocketError.NotConnected
         }
         
         var zero: Int8 = 0
         let data = NSMutableData(bytes: &zero, length: commonSocket.maxRecieveSize)
-        let dataPointer = UnsafeMutablePointer<Void>(data.mutableBytes)
         
-        let numberOfBytes = recv(descriptor, dataPointer, commonSocket.maxRecieveSize-1, 0)
+        let numberOfBytes = recv(descriptor, data.mutableBytes, commonSocket.maxRecieveSize-1, 0)
         
         // 0 bytes == connection closed
         if numberOfBytes == 0 {
@@ -155,12 +154,12 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
         return server
     }
     
-    public final func stop() throws {
+    public func stop() throws {
         try disconnect()
     }
     
     // MARK: Private
-    private final func sendAll(data: NSData, descriptor: Int32, totalSent: Int, bytesLeft: Int, chunkSize: Int) throws {
+    private func sendAll(data: NSData, descriptor: Int32, totalSent: Int, bytesLeft: Int, chunkSize: Int) throws {
         if chunkSize == -1 {
             throw SwocketError.FailedToSend
         } else if bytesLeft == 0 {
