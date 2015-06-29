@@ -2,7 +2,7 @@
   "name": "Swocket",
   "version": "0.1.0",
   "summary": "Asynchronous network framework in Swift",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/Swocket",
+  "homepage": "https://github.com/mikaoj/Swocket",
   "license": "MIT",
   "authors": {
     "Joakim Gyllström": "joakim@backslashed.se"
