@@ -22,34 +22,7 @@
 
 import Foundation
 
-extension Transmittable where Self : Asyncable {
-    public func sendDataAsync(data: NSData, onError errorClosure: SwocketErrorClosure? = nil) {
-        dispatch { () -> Void in
-            do {
-                try self.sendData(data)
-            } catch {
-                if let error = error as? SwocketError {
-                    self.handleError(error, withClosure: errorClosure)
-                }
-            }
-        }
-    }
-    
-    public func recieveDataAsync(completion: SwocketDataClosure? = nil) {
-        dispatch { () -> Void in
-            do {
-                let data = try self.recieveData()
-                
-                if let completion = completion {
-                    self.callback({ () -> Void in
-                        completion(data, nil)
-                    })
-                }
-            } catch {
-                if let error = error as? SwocketError {
-                    self.handleError(error, withClosure: completion)
-                }
-            }
-        }
-    }
+public protocol Broadcastable {
+    static func sendData(data: NSData, onPort: Int) throws
+    static func recieveDataOnPort(port: Int) throws -> NSData
 }

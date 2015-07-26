@@ -29,9 +29,4 @@ public protocol Listenable {
     - Parameter connectionClosure: Closure that will be called on every new connection
     */
     static func listen(port: UInt, onConnection connectionClosure: SwocketNewConnectionClosure) throws -> Listenable
-    
-    /**
-    Stop listen for incomming connections
-    */
-    func stop() throws
 }

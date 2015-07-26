@@ -24,14 +24,7 @@ public protocol Connectable {
     /**
     Connected or not?
     */
-    var connected: Bool { get }
-    
-    /**
-    Initializes a new connectable with a given host and port
-    - Parameter host: The host to connect to
-    - Parameter port: The port to connect to
-    */
-    init(host: String, port: UInt)
+    var isConnected: Bool { get }
     
     /**
     Connects to the host. Will throw on errors, including already connected.

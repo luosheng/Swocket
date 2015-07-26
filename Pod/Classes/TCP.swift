@@ -20,44 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-extension Asyncable {
-    /**
-    Convenience method for dispatching closure on dispatchQueue
-    */
-    public func dispatch(closure: () -> Void) {
-        dispatch_async(dispatchQueue, closure)
+import Foundation
+
+public struct TCP : Connectable, Transmittable {
+    private let host: Addressable
+    private var socketDescriptor: Int?
+    
+    // MARK: Initializers
+    public init(host aHost: Addressable) {
+        host = aHost
     }
     
-    /**
-    Convenience method for dispatching closure on callbackQueue
-    */
-    public func callback(closure: () -> Void) {
-        dispatch_async(callbackQueue, closure)
+    public init(hostName: String, port: Int) {
+        self.init(host: Host(address: hostName, port: port))
     }
     
-    /**
-    Convenience method for handling errors
-    */
-    public func handleError(error: SwocketError, withClosure closure: SwocketErrorClosure?) {
-        guard let closure = closure else {
-            return
+    private init(hostName: String, port: Int, socket: Int) {
+        self.init(hostName: hostName, port: port)
+        socketDescriptor = socket
+    }
+    
+    // MARK: Connectable
+    public var isConnected: Bool {
+        get {
+            return socketDescriptor != nil
         }
+    }
+    
+    public func connect() throws {
         
-        callback { () -> Void in
-            closure(error)
-        }
     }
     
-    /**
-    Convenience method for handling errors
-    */
-    public func handleError(error: SwocketError, withClosure closure: SwocketDataClosure?) {
-        guard let closure = closure else {
-            return
-        }
+    public func disconnect() throws {
         
-        callback { () -> Void in
-            closure(nil, error)
-        }
+    }
+    
+    // MARK: Transmittable
+    public func sendData(data: NSData) throws {
+        
+    }
+    
+    public func recieveData() throws -> NSData {
+        return NSData()
     }
 }

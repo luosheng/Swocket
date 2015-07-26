@@ -22,7 +22,13 @@
 
 import Foundation
 
-public class Swocket {
-    public static let TCP = TCPSocket.self
-    public static let UDP = UDPSocket.self
+public struct UDP : Transmittable {
+    // MARK: Transmittable
+    public func sendData(data: NSData) throws {
+        
+    }
+    
+    public func recieveData() throws -> NSData {
+        return NSData()
+    }
 }
