@@ -29,7 +29,7 @@ public enum SwocketError: ErrorType {
     case FailedToSend
     case ConnectionClosed
     case FailedToListen
-    case FailedToRecieve
+    case FailedToReceive
 }
 
 /**
@@ -40,7 +40,7 @@ internal final class Socket : Asyncable {
     let host: [CChar]
     let callbackQueue: dispatch_queue_t
     let dispatchQueue: dispatch_queue_t
-    let maxRecieveSize = 100
+    let maxReceiveSize = 100
     
     init(host aHost: String, port aPort: UInt, callback: dispatch_queue_t, dispatch: dispatch_queue_t) {
         // Forcefull unwrapp on purpose

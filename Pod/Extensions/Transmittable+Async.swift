@@ -35,10 +35,10 @@ extension Transmittable where Self : Asyncable {
         }
     }
     
-    public func recieveDataAsync(completion: SwocketDataClosure? = nil) {
+    public func receiveDataAsync(completion: SwocketDataClosure? = nil) {
         dispatch { () -> Void in
             do {
-                let data = try self.recieveData()
+                let data = try self.receiveData()
                 
                 if let completion = completion {
                     self.callback({ () -> Void in

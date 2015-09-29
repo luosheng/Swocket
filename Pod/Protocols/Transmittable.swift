@@ -28,8 +28,8 @@ public protocol Transmittable {
     func sendData(data: NSData) throws
     
     /**
-    Recieve data
-    - Return: data recieved
+    Receive data
+    - Return: data received
     */
-    func recieveData() throws -> NSData
+    func receiveData() throws -> NSData
 }

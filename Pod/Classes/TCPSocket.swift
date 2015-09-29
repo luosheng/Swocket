@@ -95,16 +95,16 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
         try sendAll(data, descriptor: descriptor, totalSent: 0, bytesLeft: data.length, chunkSize: 0)
     }
     
-    public final func recieveData() throws -> NSData {
+    public final func receiveData() throws -> NSData {
         guard let descriptor = connectionDescriptor else {
             throw SwocketError.NotConnected
         }
         
         var zero: Int8 = 0
-        let data = NSMutableData(bytes: &zero, length: commonSocket.maxRecieveSize)
+        let data = NSMutableData(bytes: &zero, length: commonSocket.maxReceiveSize)
         let dataPointer = UnsafeMutablePointer<Void>(data.mutableBytes)
         
-        let numberOfBytes = recv(descriptor, dataPointer, commonSocket.maxRecieveSize-1, 0)
+        let numberOfBytes = recv(descriptor, dataPointer, commonSocket.maxReceiveSize-1, 0)
         
         // 0 bytes == connection closed
         if numberOfBytes == 0 {
@@ -112,7 +112,7 @@ public final class TCPSocket : Listenable, Transmittable, Connectable, Asyncable
             throw SwocketError.ConnectionClosed
         } else if numberOfBytes == -1 {
             perror("recv")
-            throw SwocketError.FailedToRecieve
+            throw SwocketError.FailedToReceive
         } else {
             return NSData(bytes: data.bytes, length: numberOfBytes)
         }

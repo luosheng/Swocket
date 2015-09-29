@@ -190,7 +190,7 @@ int swocket_connect_udp(const char * host, const char * port) {
     return sockfd;
 }
 
-//ssize_t swocket_recieve_udp(int sockfd) {
+//ssize_t swocket_receive_udp(int sockfd) {
 //    int MAXBUFLEN = 100;
 //    
 //    ssize_t numbytes;

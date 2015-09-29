@@ -60,7 +60,7 @@ public class UDPSocket : Asyncable, Transmittable, Connectable {
         
     }
 
-    public final func recieveData() throws -> NSData {
+    public final func receiveData() throws -> NSData {
         return NSData()
     }
 }
